@@ -1,0 +1,43 @@
+{{#if error}}
+  <div>
+    {{error}}
+  </div>
+{{/if}}
+
+<div>
+  <h3>Route</h3>
+  <div>
+    {{one-way-input routeStr update=(action (mut routeStr))}}
+  </div>
+</div>
+
+<div>
+  <h3>Path</h3>
+
+  {{one-way-input pathStr update=(action (mut pathStr))}}
+</div>
+
+<div>
+  <h3>Match</h3>
+
+  {{#if matchedRoute}}
+    <div>
+      Route: {{matchedRoute.route}}
+    </div>
+    <div>
+      {{#if matchedRoute.isDynamic}}
+        Params:
+        <ul>
+          {{#each-in matchedRoute.params as |key value|}}
+            <li><b>{{key}}</b>: {{value}}</li>
+          {{/each-in}}
+        </ul>
+      {{else}}
+        Params: <em>none</em>
+      {{/if}}
+
+    </div>
+  {{else}}
+    <div><em>No match</em></div>
+  {{/if}}
+</div>
