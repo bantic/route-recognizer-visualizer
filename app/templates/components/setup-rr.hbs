@@ -1,0 +1,14 @@
+<div>
+  <h3>Route</h3>
+  <div>
+    {{one-way-input routeStr update=(action (mut routeStr))}}
+  </div>
+</div>
+
+<div>
+  <h3>Path</h3>
+
+  {{one-way-input pathStr update=(action (mut pathStr))}}
+</div>
+
+{{yield routeStr pathStr}}

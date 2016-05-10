@@ -745,7 +745,7 @@
     } else if (typeof module !== 'undefined' && module['exports']) {
       module['exports'] = $$route$recognizer$$default;
     } else if (typeof this !== 'undefined') {
-      this['RouteRecognizer'] = $$route$recognizer$$default;
+      this['RouteRecognizerNew'] = $$route$recognizer$$default;
     }
 }).call(this);
 

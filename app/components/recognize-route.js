@@ -1,4 +1,4 @@
-/* global RouteRecognizer */
+let { RouteRecognizer, RouteRecognizerNew } = window;
 import Ember from 'ember';
 
 export default Ember.Component.extend({
@@ -6,16 +6,19 @@ export default Ember.Component.extend({
   routeStr: null,
   pathStr: null,
   matchedRoute: null,
+  useNew: false,
 
   onInput: Ember.observer('routeStr', 'pathStr', function() {
     this.set('error', null);
     this.set('matchedRoute', null);
 
+    let Recognizer = this.get('useNew') ? RouteRecognizerNew : RouteRecognizer;
+
     let {routeStr, pathStr} = this.getProperties('routeStr', 'pathStr');
 
     if (!routeStr || !pathStr) { return; }
 
-    let rr = new RouteRecognizer();
+    let rr = new Recognizer();
     try {
       rr.add([{ path: routeStr, handler: {} }]);
     } catch (e) {

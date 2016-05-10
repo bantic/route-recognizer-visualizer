@@ -7,7 +7,8 @@ module.exports = function(defaults) {
     // Add options here
   });
 
-  app.import('vendor/route-recognizer/route-recognizer.js');
+  app.import('vendor/route-recognizer/new/route-recognizer.js');
+  app.import('bower_components/route-recognizer/dist/route-recognizer.js');
 
   // Use `app.import` to add additional libraries to the generated
   // output files.

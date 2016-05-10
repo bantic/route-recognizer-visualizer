@@ -1,0 +1,20 @@
+{{#if matchedRoute}}
+  <div>
+    Route: {{matchedRoute.route}}
+  </div>
+  <div>
+    {{#if matchedRoute.isDynamic}}
+      Params:
+      <ul>
+        {{#each-in matchedRoute.params as |key value|}}
+          <li><b>{{key}}</b>: {{value}}</li>
+        {{/each-in}}
+      </ul>
+    {{else}}
+      Params: <em>none</em>
+    {{/if}}
+
+  </div>
+{{else}}
+  <div><em>No match</em></div>
+{{/if}}

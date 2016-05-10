@@ -1,1 +1,11 @@
-{{route-recognizer}}
+{{#setup-rr as |routeStr pathStr|}}
+  <div>
+    <h2>Current Route Recognizer</h2>
+    {{recognize-route routeStr=routeStr pathStr=pathStr useNew=false}}
+  </div>
+
+  <div>
+    <h2>New Route Recognizer</h2>
+    {{recognize-route routeStr=routeStr pathStr=pathStr useNew=true}}
+  </div>
+{{/setup-rr}}
