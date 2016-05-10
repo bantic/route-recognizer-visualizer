@@ -465,9 +465,9 @@
       queryParams: null
     });
 
-    function $$route$recognizer$$findHandler(state, path, queryParams) {
+    function $$route$recognizer$$findHandler(state, path, queryParams, originalPath) {
       var handlers = state.handlers, regex = state.regex;
-      var captures = path.match(regex), currentCapture = 1;
+      var captures = originalPath.match(regex), currentCapture = 1;
       var result = new $$route$recognizer$$RecognizeResults(queryParams);
 
       result.length = handlers.length;
@@ -690,17 +690,20 @@
           queryParams = this.parseQueryString(queryString);
         }
 
+        if (path.charAt(0) !== "/") { path = "/" + path; }
+        var originalPath = path;
+
         if ($$route$recognizer$$RouteRecognizer.ENCODE_AND_DECODE_PATH_SEGMENTS) {
           path = $$route$recognizer$$normalizePath(path);
         } else {
           path = decodeURI(path);
+          originalPath = decodeURI(originalPath);
         }
-
-        if (path.charAt(0) !== "/") { path = "/" + path; }
 
         pathLen = path.length;
         if (pathLen > 1 && path.charAt(pathLen - 1) === "/") {
           path = path.substr(0, pathLen - 1);
+          originalPath = originalPath.substr(0, pathLen - 1);
           isSlashDropped = true;
         }
 
@@ -723,8 +726,9 @@
           // specified, put the trailing slash back
           if (isSlashDropped && state.regex.source.slice(-5) === "(.+)$") {
             path = path + "/";
+            originalPath = originalPath + "/";
           }
-          return $$route$recognizer$$findHandler(state, path, queryParams);
+          return $$route$recognizer$$findHandler(state, path, queryParams, originalPath);
         }
       }
     };

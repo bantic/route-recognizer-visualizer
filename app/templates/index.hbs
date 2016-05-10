@@ -1,11 +1,11 @@
 {{#setup-rr as |routeStr pathStr|}}
   <div>
-    <h2>Current Route Recognizer</h2>
+    <h2>Current Route Recognizer (v0.1.11) </h2>
     {{recognize-route routeStr=routeStr pathStr=pathStr useNew=false}}
   </div>
 
   <div>
-    <h2>New Route Recognizer</h2>
+    <h2>New Route Recognizer (<a href='https://github.com/bantic/route-recognizer/commit/5ed399f79471287b4078b7971ab5bab158ccace9'>5ed399f</a>)</h2>
     {{recognize-route routeStr=routeStr pathStr=pathStr useNew=true}}
   </div>
 {{/setup-rr}}
