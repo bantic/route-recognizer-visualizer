@@ -7,5 +7,11 @@
   <div>
     <h2>New Route Recognizer (as of <a href='https://github.com/tildeio/route-recognizer/commit/4da3c3ede9d51dc18f39fe6a1f268a2d077395d7'>4da3c3</a>)</h2>
     {{recognize-route routeStr=routeStr pathStr=pathStr useNew=true}}
+
+    <h3>Normalizations</h3>
+    <ul>
+      <li>Normalized route segments: {{join-array (normalize-route-segments routeStr)}}</li>
+      <li>Normalized path: {{normalize-path pathStr}}</li>
+    </ul>
   </div>
 {{/setup-rr}}
