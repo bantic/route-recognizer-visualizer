@@ -114,7 +114,7 @@
     // Safe to call multiple times on the same path.
     function $$route$recognizer$normalizer$$normalizePath(path) {
       return path.split('/')
-                 .map($$route$recognizer$normalizer$$normalizePathSegment)
+                 .map($$route$recognizer$normalizer$$normalizeSegment)
                  .join('/');
     }
 
@@ -127,55 +127,63 @@
     }
 
     // Decodes percent-encoded values in the string except those
-    // characters in `reservedSet`
-    function $$route$recognizer$normalizer$$decodeURIComponentExcept(string, reservedSet) {
+    // characters in `reservedHex`, where `reservedHex` is an array of 2-character
+    // percent-encodings
+    function $$route$recognizer$normalizer$$decodeURIComponentExcept(string, reservedHex) {
+      if (string.indexOf('%') === -1) {
+        // If there is no percent char, there is no decoding that needs to
+        // be done and we exit early
+        return string;
+      }
       string = $$route$recognizer$normalizer$$percentEncodedValuesToUpper(string);
-      var replacements = {};
 
-      for (var i=0; i < reservedSet.length; i++) {
-        var char = reservedSet[i];
-        var pChar = $$route$recognizer$normalizer$$percentEncode(char);
-        if (string.indexOf(pChar) !== -1) {
-          var replacement = "__" + $$route$recognizer$normalizer$$charToHex(char) + "__";
-          replacements[pChar] = replacement;
+      var result = '';
+      var buffer = '';
+      var idx = 0;
+      while (idx < string.length) {
+        var pIdx = string.indexOf('%', idx);
 
-          var pCharRegex = new RegExp(pChar, 'g');
-          string = string.replace(pCharRegex, replacement);
+        if (pIdx === -1) { // no percent char
+          buffer += string.slice(idx);
+          break;
+        } else { // found percent char
+          buffer += string.slice(idx, pIdx);
+          idx = pIdx + 3;
+
+          var hex = string.slice(pIdx + 1, pIdx + 3);
+          var encoded = '%' + hex;
+
+          if (reservedHex.indexOf(hex) === -1) {
+            // encoded is not in reserved set, add to buffer
+            buffer += encoded;
+          } else {
+            result += decodeURIComponent(buffer);
+            buffer = '';
+            result += encoded;
+          }
         }
       }
-      string = decodeURIComponent(string);
-
-      Object.keys(replacements).forEach(function(pChar) {
-        var replacement = replacements[pChar];
-        var replacementRegex = new RegExp(replacement, 'g');
-
-        string = string.replace(replacementRegex, pChar);
-      });
-
-      return string;
+      result += decodeURIComponent(buffer);
+      return result;
     }
 
     // Leave these characters in encoded state in segments
-    var $$route$recognizer$normalizer$$reservedRouteSegmentChars = ['%', '/'];
-    var $$route$recognizer$normalizer$$reservedPathSegmentChars = ['%', '/'];
+    var $$route$recognizer$normalizer$$reservedSegmentChars = ['%', '/'];
+    var $$route$recognizer$normalizer$$reservedHex = $$route$recognizer$normalizer$$reservedSegmentChars.map($$route$recognizer$normalizer$$charToHex);
 
-    function $$route$recognizer$normalizer$$normalizeRouteSegment(segment) {
-      return $$route$recognizer$normalizer$$decodeURIComponentExcept(segment, $$route$recognizer$normalizer$$reservedRouteSegmentChars);
-    }
-
-    function $$route$recognizer$normalizer$$normalizePathSegment(segment) {
-      return $$route$recognizer$normalizer$$decodeURIComponentExcept(segment, $$route$recognizer$normalizer$$reservedPathSegmentChars);
+    function $$route$recognizer$normalizer$$normalizeSegment(segment) {
+      return $$route$recognizer$normalizer$$decodeURIComponentExcept(segment, $$route$recognizer$normalizer$$reservedHex);
     }
 
     var $$route$recognizer$normalizer$$Normalizer = {
-      normalizeRouteSegment: $$route$recognizer$normalizer$$normalizeRouteSegment,
+      normalizeSegment: $$route$recognizer$normalizer$$normalizeSegment,
       normalizePath: $$route$recognizer$normalizer$$normalizePath
     };
 
     var $$route$recognizer$normalizer$$default = $$route$recognizer$normalizer$$Normalizer;
 
     var $$route$recognizer$$normalizePath = $$route$recognizer$normalizer$$default.normalizePath;
-    var $$route$recognizer$$normalizeRouteSegment = $$route$recognizer$normalizer$$default.normalizeRouteSegment;
+    var $$route$recognizer$$normalizeSegment = $$route$recognizer$normalizer$$default.normalizeSegment;
 
     var $$route$recognizer$$specials = [
       '/', '.', '*', '+', '?', '|',
@@ -205,7 +213,7 @@
     // * `invalidChars`: a String with a list of all invalid characters
     // * `repeat`: true if the character specification can repeat
 
-    function $$route$recognizer$$StaticSegment(string) { this.string = $$route$recognizer$$normalizeRouteSegment(string); }
+    function $$route$recognizer$$StaticSegment(string) { this.string = $$route$recognizer$$normalizeSegment(string); }
     $$route$recognizer$$StaticSegment.prototype = {
       eachChar: function(currentState) {
         var string = this.string, ch;
@@ -227,7 +235,7 @@
       }
     };
 
-    function $$route$recognizer$$DynamicSegment(name) { this.name = $$route$recognizer$$normalizeRouteSegment(name); }
+    function $$route$recognizer$$DynamicSegment(name) { this.name = $$route$recognizer$$normalizeSegment(name); }
     $$route$recognizer$$DynamicSegment.prototype = {
       eachChar: function(currentState) {
         return currentState.put({ invalidChars: "/", repeat: true, validChars: undefined });
@@ -731,6 +739,8 @@
     // Set to false to opt-out of encoding and decoding path segments.
     // See https://github.com/tildeio/route-recognizer/pull/55
     $$route$recognizer$$RouteRecognizer.ENCODE_AND_DECODE_PATH_SEGMENTS = true;
+
+    $$route$recognizer$$RouteRecognizer.Normalizer = $$route$recognizer$normalizer$$default;
 
     var $$route$recognizer$$default = $$route$recognizer$$RouteRecognizer;
 
